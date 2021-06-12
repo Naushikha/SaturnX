@@ -24,11 +24,6 @@ function typeWriter() {
   setTimeout(typeWriter, speed);
 }
 
-// https://stackoverflow.com/questions/9899372/pure-javascript-equivalent-of-jquerys-ready-how-to-call-a-function-when-t
-document.addEventListener("DOMContentLoaded", function (event) {
-  typeWriter();
-});
-
 // ThreeJS stuff
 ////////////////////////////////////////////////////////////////////////////
 
@@ -222,3 +217,4 @@ const renderLoop = function () {
 };
 
 renderLoop();
+typeWriter();
