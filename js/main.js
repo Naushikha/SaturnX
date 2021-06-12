@@ -29,7 +29,7 @@ function typeWriter() {
 //   typeWriter();
 // });
 document.fonts.load('1rem "Orbitron"').then(() => {
-  typeWriter();
+  setTimeout(typeWriter, 2000);
 });
 
 // ThreeJS stuff
