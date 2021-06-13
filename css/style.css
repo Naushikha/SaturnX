@@ -24,6 +24,7 @@ body {
 
   color: white;
   font-size: large;
+  /* letter-spacing: 1px; */
 
   user-select: none;
   -moz-user-select: -moz-none;
@@ -67,6 +68,7 @@ body {
 
   color: white;
   font-size: large;
+  letter-spacing: 1px;
 
   user-select: none;
   -moz-user-select: -moz-none;
@@ -92,11 +94,13 @@ body {
 
 #overlay h1 {
   font-weight: 100;
+  letter-spacing: 1px;
 }
 
 #overlay p {
   margin: 0 10em;
   text-align: center;
+  letter-spacing: 2px;
 }
 
 #overlay button {
@@ -108,4 +112,6 @@ body {
   padding: 12px 18px;
   text-transform: uppercase;
   cursor: pointer;
+  font-family: "Orbitron", sans-serif;
+  letter-spacing: 2px;
 }

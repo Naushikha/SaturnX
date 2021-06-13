@@ -3,7 +3,7 @@
 
 var letterCount = 0;
 var txt =
-  "SATURNX : PRE-HUMAN EXTINCTION | RECONNAISSANCE MOON : IN-ORBIT | RING INTEGRITY: 23.54% | EVACUATION IN PROGRESS"; /* The text */
+  "SATURNX : PRE-HUMAN EXTINCTION | RECON MOON : IN-ORBIT | RING INTEGRITY: 23.54% | EVACUATION IN PROGRESS"; /* The text */
 var speed = 130; /* The speed/duration of the effect in milliseconds */
 var end = false;
 var doneSFX = false;
@@ -62,8 +62,8 @@ manager.onLoad = function () {
     renderLoop();
     typeWriter();
     spaceSFX.setLoop(true);
-    typewriterSFX.setVolume(0.5);
-    typewriterDoneSFX.setVolume(0.5);
+    typewriterSFX.setVolume(0.4);
+    typewriterDoneSFX.setVolume(0.4);
     spaceSFX.play();
     overlay.style.visibility = "hidden";
   });
