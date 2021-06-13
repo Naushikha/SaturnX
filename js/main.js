@@ -390,7 +390,7 @@ zoomAnim.onComplete(function () {
   ss3Anim = true;
   ss5Anim = true;
 });
-zoomAnim.easing(TWEEN.Easing.Circular.InOut);
+zoomAnim.easing(TWEEN.Easing.Circular.Out);
 
 let ringAnim = 0;
 
