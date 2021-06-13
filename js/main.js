@@ -2,40 +2,53 @@
 // https://www.w3schools.com/howto/howto_js_typewriter.asp
 
 var i = 0;
-var txt = "SATURNX : PRE-HUMAN EXTINCTION"; /* The text */
-var speed = 100; /* The speed/duration of the effect in milliseconds */
+var txt =
+  "SATURNX : PRE-HUMAN EXTINCTION | RECONNAISSANCE MOON IN ORBIT | CURRENT DAY : UNKNOWN"; /* The text */
+var speed = 130; /* The speed/duration of the effect in milliseconds */
 var end = false;
 
 function typeWriter() {
   if (i < txt.length) {
-    document.getElementById("info").innerHTML += txt.charAt(i);
+    document.getElementById("info").innerHTML +=
+      txt.charAt(i) == "|" ? "<br>" : txt.charAt(i);
     speed -= 1;
     i++;
   } else {
     speed = 500;
     if (end) {
-      document.getElementById("info").innerHTML = txt;
+      document.getElementById("info").innerHTML = document
+        .getElementById("info")
+        .innerHTML.slice(0, -1);
       end = false;
     } else {
-      document.getElementById("info").innerHTML = txt + "_";
+      document.getElementById("info").innerHTML += "_";
       end = true;
     }
   }
   setTimeout(typeWriter, speed);
 }
 
-// https://stackoverflow.com/questions/9899372/pure-javascript-equivalent-of-jquerys-ready-how-to-call-a-function-when-t
-// document.addEventListener("DOMContentLoaded", function (event) {
-//   typeWriter();
-// });
-document.fonts.load('1rem "Orbitron"').then(() => {
-  setTimeout(typeWriter, 2000);
-});
-
 // ThreeJS stuff
 ////////////////////////////////////////////////////////////////////////////
 
 const dataPath = "./data/";
+let textures = [];
+
+const progress = document.getElementById("progress");
+const progressBar = document.getElementById("progress-bar");
+
+// Loading manager
+const manager = new THREE.LoadingManager();
+manager.onProgress = function (item, loaded, total) {
+  progressBar.style.width = (loaded / total) * 100 + "%";
+  progressBar.innerHTML = `Loading ${loaded}/${total}`;
+};
+
+manager.onLoad = function () {
+  progress.style.display = "none";
+  renderLoop();
+  typeWriter();
+};
 
 // Setting up the scene, camera, renderer
 const scene = new THREE.Scene();
@@ -50,10 +63,18 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 renderer.shadowMapEnabled = true;
 
+// Handle window resizing
+window.addEventListener("resize", onWindowResize, false);
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
 // Skybox
 // http://wwwtyro.github.io/space-3d
 
-const loader = new THREE.CubeTextureLoader();
+const loader = new THREE.CubeTextureLoader(manager);
 loader.setPath(dataPath);
 
 const skyboxTextures = loader.load([
@@ -69,7 +90,9 @@ scene.background = skyboxTextures;
 
 // Saturn
 const saturnGeometry = new THREE.SphereGeometry(3, 100, 100);
-const saturnTexture = new THREE.TextureLoader().load(`${dataPath}saturnx.png`);
+const saturnTexture = new THREE.TextureLoader(manager).load(
+  `${dataPath}saturnx.png`
+);
 const saturnMaterial = new THREE.MeshPhongMaterial({
   map: saturnTexture,
   shininess: 60,
@@ -83,7 +106,7 @@ saturn.receiveShadow = true;
 
 // Saturn Rings
 const saturnRingGeometry1 = new THREE.RingGeometry(3.1, 3.5, 100);
-const saturnRingTexture1 = new THREE.TextureLoader().load(
+const saturnRingTexture1 = new THREE.TextureLoader(manager).load(
   `${dataPath}ring_1.jpg`
 );
 const saturnRingMaterial1 = new THREE.MeshLambertMaterial({
@@ -99,7 +122,7 @@ scene.add(saturnRing1);
 saturnRing1.receiveShadow = true;
 
 const saturnRingGeometry2 = new THREE.RingGeometry(3.55, 3.9, 100);
-const saturnRingTexture2 = new THREE.TextureLoader().load(
+const saturnRingTexture2 = new THREE.TextureLoader(manager).load(
   `${dataPath}ring_2.jpg`
 );
 const saturnRingMaterial2 = new THREE.MeshLambertMaterial({
@@ -115,7 +138,7 @@ scene.add(saturnRing2);
 saturnRing2.receiveShadow = true;
 
 const saturnRingGeometry3 = new THREE.RingGeometry(4, 5, 100);
-const saturnRingTexture3 = new THREE.TextureLoader().load(
+const saturnRingTexture3 = new THREE.TextureLoader(manager).load(
   `${dataPath}ring_3.jpg`
 );
 const saturnRingMaterial3 = new THREE.MeshLambertMaterial({
@@ -144,7 +167,7 @@ saturnM1.castShadow = true;
 saturnM1.position.set(-3, 3, 6);
 
 const saturnM2Geometry = new THREE.SphereGeometry(0.3, 100, 100);
-const saturnM2Texture = new THREE.TextureLoader().load(
+const saturnM2Texture = new THREE.TextureLoader(manager).load(
   `${dataPath}saturnx_p2.jpg`
 );
 const saturnM2Material = new THREE.MeshLambertMaterial({
@@ -223,5 +246,3 @@ const renderLoop = function () {
 
   renderer.render(scene, camera);
 };
-
-renderLoop();
