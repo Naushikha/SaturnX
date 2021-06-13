@@ -3,18 +3,35 @@
   <head>
     <meta charset="utf-8" />
     <title>SATURNX</title>
-    <!-- <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap"
-      rel="stylesheet"
-    /> -->
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <div id="info"></div>
-    <div id="copy">Naushikha Jayawickrama</div>
+    <div id="copy">
+      Naushikha Jayawickrama |
+      <small>Designed for Game Dev Course @ UCSC</small>
+    </div>
     <div id="progress"><div id="progress-bar">Loading...</div></div>
-    <script src="js/three.js"></script>
+    <div id="overlay">
+      <h1>SaturnX : A Simple Three.JS Demonstration</h1>
+      <p>
+        The planet is on the brink of collapse with its rings losing power,
+        dissappearing into the void.
+        <br />With utmost desperation; humanity is looking for alternatives.
+        <br />
+        Yet finding none, the only option left is to return back to long lost
+        Earth.
+        <br /><br />
+        The reconnaissance moon is on high alert for alien lifeforms that pose a
+        threat to the evacuation procedure.
+        <br />
+        <br />
+      </p>
+      <button id="start-button">Play</button>
+    </div>
+    <script src="js/three.min.js"></script>
+    <script src="js/OBJLoader.js"></script>
+    <script src="js/MTLLoader.js"></script>
     <script src="js/OrbitControls.js"></script>
     <script src="js/main.js"></script>
     <script></script>

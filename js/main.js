@@ -3,15 +3,17 @@
 
 var letterCount = 0;
 var txt =
-  "SATURNX : PRE-HUMAN EXTINCTION | RECONNAISSANCE MOON IN ORBIT | RING INTEGRITY: 23.54% | EVACUATION IN PROGRESS"; /* The text */
+  "SATURNX : PRE-HUMAN EXTINCTION | RECONNAISSANCE MOON : IN-ORBIT | RING INTEGRITY: 23.54% | EVACUATION IN PROGRESS"; /* The text */
 var speed = 130; /* The speed/duration of the effect in milliseconds */
 var end = false;
+var doneSFX = false;
 
 function typeWriter() {
   if (letterCount < txt.length) {
     document.getElementById("info").innerHTML +=
       txt.charAt(letterCount) == "|" ? "<br>" : txt.charAt(letterCount);
     speed -= 1;
+    if (!typewriterSFX.isPlaying) typewriterSFX.play();
     letterCount++;
   } else {
     speed = 500;
@@ -23,6 +25,11 @@ function typeWriter() {
     } else {
       document.getElementById("info").innerHTML += "_";
       end = true;
+      if (!doneSFX) {
+        typewriterSFX.stop();
+        typewriterDoneSFX.play();
+        doneSFX = true;
+      }
     }
   }
   setTimeout(typeWriter, speed);
@@ -36,18 +43,30 @@ let textures = [];
 
 const progress = document.getElementById("progress");
 const progressBar = document.getElementById("progress-bar");
+const overlay = document.getElementById("overlay");
+const startButton = document.getElementById("start-button");
 
 // Loading manager
 const manager = new THREE.LoadingManager();
 manager.onProgress = function (item, loaded, total) {
   progressBar.style.width = (loaded / total) * 100 + "%";
   progressBar.innerHTML = `Loading ${loaded}/${total}`;
+  2;
+  overlay.style.visibility = "hidden";
 };
 
 manager.onLoad = function () {
   progress.style.display = "none";
-  renderLoop();
-  typeWriter();
+  overlay.style.visibility = "visible";
+  startButton.addEventListener("click", () => {
+    renderLoop();
+    typeWriter();
+    spaceSFX.setLoop(true);
+    typewriterSFX.setVolume(0.5);
+    typewriterDoneSFX.setVolume(0.5);
+    spaceSFX.play();
+    overlay.style.visibility = "hidden";
+  });
 };
 
 // Setting up the scene, camera, renderer
@@ -70,6 +89,18 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
+
+// Setup audio
+const listener = new THREE.AudioListener();
+camera.add(listener);
+const audioLoader = new THREE.AudioLoader(manager);
+// There's no sound in space, but the effect with the ambience is surreal
+const spaceSFX = new THREE.Audio(listener);
+spaceSFX.load(`${dataPath}space_ambience.ogg`);
+const typewriterSFX = new THREE.Audio(listener);
+typewriterSFX.load(`${dataPath}typewriter.ogg`);
+const typewriterDoneSFX = new THREE.Audio(listener);
+typewriterDoneSFX.load(`${dataPath}typewriter_done.ogg`);
 
 // Skybox
 // http://wwwtyro.github.io/space-3d
@@ -213,6 +244,101 @@ var asteroidMaterial = new THREE.PointsMaterial({
 var asteroidParts = new THREE.Points(asteroidGeometry, asteroidMaterial);
 scene.add(asteroidParts);
 
+// Spaceships
+// https://www.reddit.com/r/gamedev/comments/7qymqo/free_lowpoly_spaceships/
+
+const mtlLoader = new THREE.MTLLoader(manager);
+
+var spaceship1,
+  ss1AnimState = 0,
+  ss1Anim = true;
+mtlLoader.load(`${dataPath}Spaceship1.mtl`, (mtl) => {
+  mtl.preload();
+  const objLoader = new THREE.OBJLoader(manager);
+  objLoader.setMaterials(mtl);
+  objLoader.load(`${dataPath}Spaceship1.obj`, (root) => {
+    spaceship1 = root;
+    scene.add(spaceship1);
+    spaceship1.position.x = 4.5;
+    spaceship1.position.y = 0.2;
+    spaceship1.scale.set(0.1, 0.1, 0.1);
+    // https://stackoverflow.com/questions/15906248/three-js-objloader-obj-model-not-casting-shadows
+    spaceship1.traverse(function (child) {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+      }
+    });
+  });
+});
+var spaceship2,
+  ss2AnimState = 0,
+  ss2Anim = true;
+mtlLoader.load(`${dataPath}Spaceship3.mtl`, (mtl) => {
+  mtl.preload();
+  const objLoader = new THREE.OBJLoader(manager);
+  objLoader.setMaterials(mtl);
+  objLoader.load(`${dataPath}Spaceship3.obj`, (root) => {
+    spaceship2 = root;
+    scene.add(spaceship2);
+    spaceship2.position.set(-7.2, 2, 7);
+    spaceship2.rotation.y = Math.PI / 2;
+    spaceship2.scale.set(0.1, 0.1, 0.1);
+  });
+});
+var spaceship3,
+  ss3AnimState = 0,
+  ss3Anim = true;
+mtlLoader.load(`${dataPath}Spaceship2.mtl`, (mtl) => {
+  mtl.preload();
+  const objLoader = new THREE.OBJLoader(manager);
+  objLoader.setMaterials(mtl);
+  objLoader.load(`${dataPath}Spaceship2.obj`, (root) => {
+    spaceship3 = root;
+    scene.add(spaceship3);
+    spaceship3.position.set(-7.2, 2, 6);
+    spaceship3.rotation.y = Math.PI / 2;
+    spaceship3.scale.set(0.1, 0.1, 0.1);
+  });
+});
+
+var spaceship4,
+  ss4AnimState = 0,
+  ss4Anim = false;
+mtlLoader.load(`${dataPath}Spaceship5.mtl`, (mtl) => {
+  mtl.preload();
+  const objLoader = new THREE.OBJLoader(manager);
+  objLoader.setMaterials(mtl);
+  objLoader.load(`${dataPath}Spaceship5.obj`, (root) => {
+    spaceship4 = root;
+    scene.add(spaceship4);
+    spaceship4.position.z = 4.5;
+    spaceship4.position.y = 0;
+    spaceship4.scale.set(0.06, 0.06, 0.06);
+    spaceship4.traverse(function (child) {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+  });
+});
+
+var spaceship5,
+  ss5AnimState = 0,
+  ss5Anim = true;
+mtlLoader.load(`${dataPath}Spaceship4.mtl`, (mtl) => {
+  mtl.preload();
+  const objLoader = new THREE.OBJLoader(manager);
+  objLoader.setMaterials(mtl);
+  objLoader.load(`${dataPath}Spaceship4.obj`, (root) => {
+    spaceship5 = root;
+    scene.add(spaceship5);
+    spaceship5.position.set(-9, 2, 7);
+    spaceship5.rotation.y = Math.PI / 2;
+    spaceship5.scale.set(0.1, 0.1, 0.1);
+  });
+});
+
 // Lighting
 
 const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1);
@@ -265,6 +391,74 @@ const renderLoop = function () {
 
   asteroidParts.position.x -= 0.01;
   asteroidParts.position.y -= 0.01;
+
+  if (ss1Anim) {
+    switch (ss1AnimState) {
+      case 0:
+        spaceship1.position.y += 0.001;
+        if (spaceship1.position.y > 0.6) {
+          ss1AnimState = 1;
+        }
+        break;
+      case 1:
+        spaceship1.position.z += 0.01;
+        if (spaceship1.position.z > 5) {
+          ss4Anim = true;
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  if (ss4Anim) {
+    switch (ss4AnimState) {
+      case 0:
+        spaceship4.position.y += 0.002;
+        if (spaceship4.position.y > 0.6) {
+          ss4AnimState = 1;
+        }
+        break;
+      case 1:
+        spaceship4.position.z += 0.01;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  if (ss2Anim) {
+    spaceship2.position.x += 0.05;
+    spaceship2.rotation.x += 0.0025;
+  }
+  if (ss3Anim) {
+    spaceship3.position.x += 0.035;
+    spaceship3.rotation.x -= 0.0015;
+  }
+
+  if (ss5Anim) {
+    switch (ss5AnimState) {
+      case 0:
+        spaceship5.position.x += 0.035;
+        if (spaceship5.position.x > 15) {
+          ss5AnimState = 1;
+          spaceship5.rotation.y += Math.PI;
+        }
+        break;
+      case 1:
+        spaceship5.position.x -= 0.035;
+        if (spaceship5.position.x < -12) {
+          ss5AnimState = 0;
+          spaceship5.rotation.y += Math.PI;
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
 
   controls.update(); // CONTROLS
 
