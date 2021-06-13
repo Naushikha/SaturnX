@@ -104,6 +104,7 @@ body {
 }
 
 #overlay button {
+  visibility: hidden;
   background: transparent;
   border: 0;
   border: 1px solid rgb(255, 255, 255);

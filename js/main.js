@@ -52,12 +52,13 @@ manager.onProgress = function (item, loaded, total) {
   progressBar.style.width = (loaded / total) * 100 + "%";
   progressBar.innerHTML = `Loading ${loaded}/${total}`;
   2;
-  overlay.style.visibility = "hidden";
+  startButton.style.visibility = "hidden";
 };
 
 manager.onLoad = function () {
   progress.style.display = "none";
   overlay.style.visibility = "visible";
+  startButton.style.visibility = "visible";
   startButton.addEventListener("click", () => {
     renderLoop();
     typeWriter();
@@ -65,6 +66,7 @@ manager.onLoad = function () {
     typewriterSFX.setVolume(0.4);
     typewriterDoneSFX.setVolume(0.4);
     spaceSFX.play();
+    startButton.style.visibility = "hidden";
     overlay.style.visibility = "hidden";
   });
 };
