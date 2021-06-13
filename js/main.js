@@ -1,18 +1,18 @@
 // Typing effect
 // https://www.w3schools.com/howto/howto_js_typewriter.asp
 
-var i = 0;
+var letterCount = 0;
 var txt =
-  "SATURNX : PRE-HUMAN EXTINCTION | RECONNAISSANCE MOON IN ORBIT | CURRENT DAY : UNKNOWN"; /* The text */
+  "SATURNX : PRE-HUMAN EXTINCTION | RECONNAISSANCE MOON IN ORBIT | RING INTEGRITY: 23.54% | EVACUATION IN PROGRESS"; /* The text */
 var speed = 130; /* The speed/duration of the effect in milliseconds */
 var end = false;
 
 function typeWriter() {
-  if (i < txt.length) {
+  if (letterCount < txt.length) {
     document.getElementById("info").innerHTML +=
-      txt.charAt(i) == "|" ? "<br>" : txt.charAt(i);
+      txt.charAt(letterCount) == "|" ? "<br>" : txt.charAt(letterCount);
     speed -= 1;
-    i++;
+    letterCount++;
   } else {
     speed = 500;
     if (end) {
@@ -187,10 +187,31 @@ const saturnM3Material = new THREE.MeshPhongMaterial({
   envMap: refractionCube,
   refractionRatio: 0.99,
 });
-
 const saturnM3 = new THREE.Mesh(saturnM3Geometry, saturnM3Material);
 saturnM3.position.set(-3, 3, 6);
 scene.add(saturnM3);
+
+// Asteroid Particles
+
+var asteroidVertices = [];
+for (var i = 0; i < 2000; i++) {
+  var x = THREE.MathUtils.randFloatSpread(1000);
+  var y = THREE.MathUtils.randFloatSpread(1000);
+  var z = THREE.MathUtils.randFloatSpread(1000);
+  asteroidVertices.push(x, y, z);
+}
+var asteroidGeometry = new THREE.BufferGeometry();
+asteroidGeometry.setAttribute(
+  "position",
+  new THREE.Float32BufferAttribute(asteroidVertices, 3)
+);
+var asteroidMaterial = new THREE.PointsMaterial({
+  size: 4,
+  transparent: true,
+  map: new THREE.TextureLoader().load(`${dataPath}asteroid.png`),
+});
+var asteroidParts = new THREE.Points(asteroidGeometry, asteroidMaterial);
+scene.add(asteroidParts);
 
 // Lighting
 
@@ -241,6 +262,9 @@ const renderLoop = function () {
     1,
     7 * Math.cos(ringAnim * 6 + 20)
   );
+
+  asteroidParts.position.x -= 0.01;
+  asteroidParts.position.y -= 0.01;
 
   controls.update(); // CONTROLS
 
