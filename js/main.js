@@ -7,6 +7,7 @@ var txt =
 var speed = 130; /* The speed/duration of the effect in milliseconds */
 var end = false;
 var doneSFX = false;
+var zoomEffect = true;
 
 function typeWriter() {
   if (letterCount < txt.length) {
@@ -60,6 +61,7 @@ manager.onLoad = function () {
   overlay.style.visibility = "visible";
   startButton.style.visibility = "visible";
   startButton.addEventListener("click", () => {
+    zoomAnim.start();
     renderLoop();
     typeWriter();
     spaceSFX.setLoop(true);
@@ -253,7 +255,7 @@ const mtlLoader = new THREE.MTLLoader(manager);
 
 var spaceship1,
   ss1AnimState = 0,
-  ss1Anim = true;
+  ss1Anim = false;
 mtlLoader.load(`${dataPath}Spaceship1.mtl`, (mtl) => {
   mtl.preload();
   const objLoader = new THREE.OBJLoader(manager);
@@ -274,7 +276,7 @@ mtlLoader.load(`${dataPath}Spaceship1.mtl`, (mtl) => {
 });
 var spaceship2,
   ss2AnimState = 0,
-  ss2Anim = true;
+  ss2Anim = false;
 mtlLoader.load(`${dataPath}Spaceship3.mtl`, (mtl) => {
   mtl.preload();
   const objLoader = new THREE.OBJLoader(manager);
@@ -289,7 +291,7 @@ mtlLoader.load(`${dataPath}Spaceship3.mtl`, (mtl) => {
 });
 var spaceship3,
   ss3AnimState = 0,
-  ss3Anim = true;
+  ss3Anim = false;
 mtlLoader.load(`${dataPath}Spaceship2.mtl`, (mtl) => {
   mtl.preload();
   const objLoader = new THREE.OBJLoader(manager);
@@ -327,7 +329,7 @@ mtlLoader.load(`${dataPath}Spaceship5.mtl`, (mtl) => {
 
 var spaceship5,
   ss5AnimState = 0,
-  ss5Anim = true;
+  ss5Anim = false;
 mtlLoader.load(`${dataPath}Spaceship4.mtl`, (mtl) => {
   mtl.preload();
   const objLoader = new THREE.OBJLoader(manager);
@@ -357,8 +359,38 @@ const axesHelper = new THREE.AxesHelper(5);
 // scene.add(axesHelper);
 
 const controls = new THREE.OrbitControls(camera, renderer.domElement); // CONTROLS
+controls.minDistance = 7;
+controls.maxDistance = 100;
+controls.rotateSpeed = 0.1;
+controls.zoomSpeed = 0.1;
 
 camera.position.set(6.7900673199524295, 2.212726262903611, 7.356446520692252);
+
+// Zoom in Animation at the beginning
+// http://learningthreejs.com/blog/2011/08/17/tweenjs-for-smooth-animation/
+var posVec = {
+  x: 66.22691876901766,
+  y: 21.581824680998317,
+  z: 71.751098066863,
+};
+var endVec = {
+  x: 6.7900673199524295,
+  y: 2.212726262903611,
+  z: 7.356446520692252,
+};
+var zoomAnim = new TWEEN.Tween(posVec).to(endVec, 9000);
+zoomAnim.onUpdate(function () {
+  camera.position.x = posVec.x;
+  camera.position.y = posVec.y;
+  camera.position.z = posVec.z;
+});
+zoomAnim.onComplete(function () {
+  ss1Anim = true;
+  ss2Anim = true;
+  ss3Anim = true;
+  ss5Anim = true;
+});
+zoomAnim.easing(TWEEN.Easing.Circular.InOut);
 
 let ringAnim = 0;
 
@@ -461,6 +493,7 @@ const renderLoop = function () {
         break;
     }
   }
+  TWEEN.update();
 
   controls.update(); // CONTROLS
 
